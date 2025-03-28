@@ -59,7 +59,7 @@ export class GraphManager {
                 //     nodeDistance: 70,
                 // }
                 barnesHut: {
-                    springLength: 600,
+                    springLength: 800,
                     gravitationalConstant: -2000,
                 }
             }
@@ -149,6 +149,46 @@ export class GraphManager {
                 this.toggleProtocol(protocol, checkbox.checked);
             });
         });
+    }
+
+    populateTokenDropdowns() {
+        const sellTokenSelect = document.getElementById('sell-token');
+        const buyTokenSelect = document.getElementById('buy-token');
+
+        if (!sellTokenSelect || !buyTokenSelect) {
+            console.error("Token select dropdowns not found");
+            return;
+        }
+
+        // Clear existing options
+        sellTokenSelect.innerHTML = '';
+        buyTokenSelect.innerHTML = '';
+
+        // Add options for each token
+        this.tokenNodes.forEach(node => {
+            const sellOption = document.createElement('option');
+            sellOption.value = node.id;
+            sellOption.textContent = node.label;
+
+            const buyOption = document.createElement('option');
+            buyOption.value = node.id;
+            buyOption.textContent = node.label;
+
+            sellTokenSelect.appendChild(sellOption);
+            buyTokenSelect.appendChild(buyOption);
+        });
+
+        // Set default values
+        if (sellTokenSelect.options.length > 0) {
+            sellTokenSelect.selectedIndex = 1; // WETH is often index 1
+        }
+
+        if (buyTokenSelect.options.length > 0) {
+            // Try to find LDO, or default to index 2
+            const ldoIndex = Array.from(buyTokenSelect.options)
+                .findIndex(option => option.textContent === 'LDO');
+            buyTokenSelect.selectedIndex = ldoIndex !== -1 ? ldoIndex : 2;
+        }
     }
 
     // Toggle the visibility of a node
@@ -373,6 +413,10 @@ export class GraphManager {
         return this.poolEdges;
     }
 
+    getTokenNodes() {
+        return this.tokenNodes;
+    }
+
     // Update the network structure (called when nodes change)
     updateNetworkStructure() {
         // Clear existing data
@@ -458,7 +502,7 @@ export class GraphManager {
         let result;
         if (data.new_pairs) {
             // Process the new_pairs data
-            result = this.processNewPairs(data.new_pairs);
+            result = this.processNewPairs(data.new_pairs, data.spot_prices);
         }
 
         if (firstMessage) {
@@ -487,7 +531,8 @@ export class GraphManager {
     }
 
     // Process new pairs data specifically
-    processNewPairs(newPairs) {
+    // Spot prices are maps of pair address to spot price, in token_0 -> token_1 direction
+    processNewPairs(newPairs, spotPrices) {
         // Track new nodes and edges to add
         const newTokenNodes = [];
         const newPoolEdges = [];
@@ -497,7 +542,7 @@ export class GraphManager {
         const existingTokenAddresses = new Set(this.tokenNodes.map(node => node.id));
 
         // Iterate through each new pair
-        Object.entries(newPairs).forEach(([pairAddress, pairData]) => {
+        Object.entries(newPairs).forEach(([poolAddress, pairData]) => {
             // Process tokens first
             pairData.tokens.forEach(token => {
                 // Skip if we already have this token
@@ -538,7 +583,8 @@ export class GraphManager {
                     to: token1Id,
                     width: 1, // Default width
                     protocol: pairData.protocol_system,
-                    id: pairAddress
+                    id: poolAddress,
+                    spotPrice: spotPrices[poolAddress] || 1.0,
                 };
 
                 // Set color based on protocol
@@ -564,11 +610,17 @@ export class GraphManager {
         // Update the node selection UI if there are new nodes
         if (newTokenNodes.length > 0) {
             this.createNodeSelectionUI();
+            this.populateTokenDropdowns();
         }
 
         return {
             addedNodes: newTokenNodes.length,
             addedEdges: newPoolEdges.length
         };
+    }
+
+    getNodeIdByLabel(symbol) {
+        console.log("Finding node ID by symbol:", symbol);
+        let node = this.tokenNodes.find(node => node.symbol === symbol)?.id;
     }
 }

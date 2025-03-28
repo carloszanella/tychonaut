@@ -1,6 +1,7 @@
 import {GraphManager} from './graphManager.js';
 import {tokenNodes, poolEdges} from './data.js';
 import {startUpdateLoop, stopUpdateLoop} from './loop.js';
+import {find_best_route} from "./solver.js";
 
 // Global reference to graph manager
 let graphManager;
@@ -36,7 +37,16 @@ function setupControls() {
     if (simulateButton) {
         console.log("Simulate button found, adding event listener");
         simulateButton.addEventListener('click', () => {
-            console.log('Simulate button clicked');
+            console.log('Execute Simulate button clicked');
+            const sellTokenSelect = document.getElementById('sell-token').value;
+            const buyTokenSelect = document.getElementById('buy-token').value;
+            const result = find_best_route(
+                graphManager.getTokenNodes(),
+                graphManager.getPoolEdges(),
+                sellTokenSelect,
+                buyTokenSelect
+            );
+            console.log("Best route result:", result);
         });
     } else {
         console.error("Simulate button not found!");
@@ -52,48 +62,6 @@ function setupControls() {
         });
     } else {
         console.error("Swap button not found!");
-    }
-    populateTokenDropdowns();
-}
-
-// Populate token dropdowns
-function populateTokenDropdowns() {
-    const sellTokenSelect = document.getElementById('sell-token');
-    const buyTokenSelect = document.getElementById('buy-token');
-
-    if (!sellTokenSelect || !buyTokenSelect) {
-        console.error("Token select dropdowns not found");
-        return;
-    }
-
-    // Clear existing options
-    sellTokenSelect.innerHTML = '';
-    buyTokenSelect.innerHTML = '';
-
-    // Add options for each token
-    tokenNodes.forEach(node => {
-        const sellOption = document.createElement('option');
-        sellOption.value = node.id;
-        sellOption.textContent = node.label;
-
-        const buyOption = document.createElement('option');
-        buyOption.value = node.id;
-        buyOption.textContent = node.label;
-
-        sellTokenSelect.appendChild(sellOption);
-        buyTokenSelect.appendChild(buyOption);
-    });
-
-    // Set default values
-    if (sellTokenSelect.options.length > 0) {
-        sellTokenSelect.selectedIndex = 1; // WETH is often index 1
-    }
-
-    if (buyTokenSelect.options.length > 0) {
-        // Try to find LDO, or default to index 2
-        const ldoIndex = Array.from(buyTokenSelect.options)
-            .findIndex(option => option.textContent === 'LDO');
-        buyTokenSelect.selectedIndex = ldoIndex !== -1 ? ldoIndex : 2;
     }
 }
 

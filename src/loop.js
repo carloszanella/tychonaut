@@ -37,8 +37,6 @@ export function startUpdateLoop(graphManager) {
 
         // Listen for messages
         socket.addEventListener('message', (event) => {
-            console.log('Message from server:', event.data);
-
             // if (!processedFirstMessage) {
             //     // initialise graph
             //     // Try to parse the message as JSON
