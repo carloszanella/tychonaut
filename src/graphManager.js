@@ -53,6 +53,7 @@ export class GraphManager {
                     color: "#ffffff",
                     face: "monospace",
                 },
+                size: 20,
             },
             physics: {
                 // solver: "repulsion",
@@ -586,6 +587,9 @@ export class GraphManager {
                 if (token.symbol === "0x0000000000000000000000000000000000000000") {
                     token.symbol = "ETH";
                 }
+                if (token.symbol.length > 15){
+                    token.symbol = token.symbol.substring(0, 6) + "...";
+                }
                 const tokenNode = {
                     id: token.address,
                     size: 1,
@@ -762,7 +766,7 @@ export class GraphManager {
                         background: "#232323",     // Reset to default
                         highlight: {
                             border: "#000000",     // Reset to default
-                            background: "#ffffff"  // Reset to default
+                            background: "#F66733"  // Reset to default
                         }
                     }
                 });
