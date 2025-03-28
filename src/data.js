@@ -1,5 +1,10 @@
 // Initial data for the network visualization
 
+export const protocols = [
+    "uniswap_v2",
+    "uniswap_v3",
+];
+
 export const protocolColorMap = {
     "uniswap_v2": {
         color: "#2f00ff",

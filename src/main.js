@@ -14,9 +14,14 @@ function initializeApp() {
 
     // Set up UI components
     graphManager.createNodeSelectionUI();
+    graphManager.createProtocolSelectionUI();
 
     // Set up event listeners
     graphManager.setupEventListeners();
+
+    // Select all nodes and protocols by default to show data
+    graphManager.selectAllNodes();
+    graphManager.selectAllProtocols();
 
     // Setup controls for the update loop
     setupUpdateControls();
@@ -44,12 +49,14 @@ function startUpdateLoop() {
     /*
     updateInterval = setInterval(() => {
       // Get new data from somewhere
-      const newNodeData = fetchNewNodeData();
-      const newEdgeData = fetchNewEdgeData();
+      const newPools = fetchNewPools();
+      const updatedPools = fetchUpdatedPools();
+      const removedPools = fetchRemovedPools();
 
       // Update the graph
-      graphManager.updateNodeData(newNodeData);
-      graphManager.updateEdgeData(newEdgeData);
+      graphManager.addPoolEdges(newPools);
+      graphManager.updatePoolValues(updatedPools);
+      graphManager.removePoolEdges(removedPools);
     }, 1000);
     */
 }
@@ -65,9 +72,9 @@ function stopUpdateLoop() {
 
 // Example of how to access graph data
 function logCurrentGraphState() {
-    console.log("Current nodes:", graphManager.getNodeData());
-    console.log("Current edges:", graphManager.getEdgeData());
+    console.log("Current pools:", graphManager.getPoolEdges());
     console.log("Selected nodes:", graphManager.getSelectedNodes());
+    console.log("Selected protocols:", graphManager.getSelectedProtocols());
 }
 
 // Initialize everything when the page loads
