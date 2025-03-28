@@ -14,60 +14,63 @@
     </header>
 
     <div class="main-container">
-        <!-- Left sidebar -->
-        <div class="sidebar left-sidebar">
-            <div class="panel">
-                <h3>Tokens</h3>
-                <div id="node-selection" class="checkbox-container">
-                    <!-- Token checkboxes will be generated here -->
-                </div>
-            </div>
-
-            <div class="panel">
-                <h3>Protocols</h3>
-                <div id="protocol-selection" class="checkbox-container">
-                    <!-- Protocol checkboxes will be generated here -->
-                </div>
-            </div>
-
-            <div class="controls">
-                <button id="select-all">Select All</button>
-                <button id="reset">Reset</button>
-            </div>
-        </div>
-
-        <!-- Main network visualization -->
-        <div class="main-content">
+        <!-- Main network visualization that spans the entire area -->
+        <div class="network-container">
             <div id="mynetwork"></div>
         </div>
 
-        <!-- Right sidebar - placeholder for future functionality -->
-        <div class="sidebar right-sidebar">
-            <div class="panel">
-                <h3>Swap</h3>
-                <div class="swap-container">
-                    <!-- Placeholder for future swap functionality -->
-                    <div class="swap-row">
-                        <label>Sell token</label>
-                        <div class="token-select">WETH</div>
+        <!-- Overlay panels -->
+        <div class="overlay-panels">
+            <!-- Left panel -->
+            <div class="panel left-panel">
+                <div class="panel-content">
+                    <h3>Tokens</h3>
+                    <div id="node-selection" class="checkbox-container">
+                        <!-- Token checkboxes will be generated here -->
                     </div>
-                    <div class="swap-row">
-                        <label>Buy token</label>
-                        <div class="token-select">LDO</div>
+                </div>
+
+                <div class="panel-content">
+                    <h3>Protocols</h3>
+                    <div id="protocol-selection" class="checkbox-container">
+                        <!-- Protocol checkboxes will be generated here -->
                     </div>
-                    <div class="swap-row">
-                        <label>Sell Amount</label>
-                        <input type="text" value="1.0" disabled/>
+                </div>
+
+                <div class="controls">
+                    <button id="select-all">Select All</button>
+                    <button id="reset">Reset</button>
+                </div>
+            </div>
+
+            <!-- Right panel - placeholder for future functionality -->
+            <div class="panel right-panel">
+                <div class="panel-content">
+                    <h3>Swap</h3>
+                    <div class="swap-container">
+                        <!-- Placeholder for future swap functionality -->
+                        <div class="swap-row">
+                            <label>Sell token</label>
+                            <div class="token-select">WETH</div>
+                        </div>
+                        <div class="swap-row">
+                            <label>Buy token</label>
+                            <div class="token-select">LDO</div>
+                        </div>
+                        <div class="swap-row">
+                            <label>Sell Amount</label>
+                            <input type="text" value="1.0" disabled/>
+                        </div>
+                        <div class="swap-row">
+                            <label>Min Buy Amount</label>
+                            <input type="text" class="highlight" value="500.65" disabled/>
+                        </div>
+                        <div class="swap-row">
+                            <label>Price</label>
+                            <input type="text" class="highlight" value="1.754" disabled/>
+                        </div>
+                        <button class="swap-button" disabled>Execute Swap</button>
                     </div>
-                    <div class="swap-row">
-                        <label>Min Buy Amount</label>
-                        <input type="text" class="highlight" value="500.65" disabled/>
-                    </div>
-                    <div class="swap-row">
-                        <label>Price</label>
-                        <input type="text" class="highlight" value="1.754" disabled/>
-                    </div>
-                    <button class="swap-button" disabled>Execute Swap</button>
                 </div>
             </div>
         </div>
