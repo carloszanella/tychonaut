@@ -38,18 +38,50 @@ function setupControls() {
         console.log("Simulate button found, adding event listener");
         simulateButton.addEventListener('click', () => {
             console.log('Execute Simulate button clicked');
+
             const sellTokenSelect = document.getElementById('sell-token').value;
             const buyTokenSelect = document.getElementById('buy-token').value;
+
+            // First, reset any existing highlights
+            graphManager.resetHighlights();
+
             const result = find_best_route(
                 graphManager.getTokenNodes(),
                 graphManager.getPoolEdges(),
                 sellTokenSelect,
                 buyTokenSelect
             );
+
             console.log("Best route result:", result);
+
+            // Update UI with the results
+            if (result.success) {
+                // Extract node and edge IDs to highlight
+                const nodeIds = [];
+                const edgeIds = [];
+
+                // Add start and end nodes
+                if (result.route && result.route.length > 0) {
+                    // Find nodes by label in the tokenNodes array
+                    graphManager.getTokenNodes().forEach(node => {
+                        if (result.route.includes(node.label)) {
+                            nodeIds.push(node.id);
+                        }
+                    });
+                }
+
+                // Add edge IDs
+                if (result.bestPath && result.bestPath.length > 0) {
+                    result.bestPath.forEach(edge => {
+                        edgeIds.push(edge.id);
+                    });
+                }
+
+                graphManager.highlight(nodeIds, edgeIds);
+            } else {
+                console.error("Failed to find route:", result.reason);
+            }
         });
-    } else {
-        console.error("Simulate button not found!");
     }
 
     // Add event listener for the swap button

@@ -414,10 +414,6 @@ export class GraphManager {
         return this.poolEdges;
     }
 
-    getTokenNodes() {
-        return this.tokenNodes;
-    }
-
     // Update the network structure (called when nodes change)
     updateNetworkStructure() {
         // Clear existing data
@@ -557,7 +553,7 @@ export class GraphManager {
                 }
                 const tokenNode = {
                     id: token.address,
-                    value: 1,
+                    size: 1,
                     label: token.symbol,
                 };
 
@@ -623,5 +619,167 @@ export class GraphManager {
     getNodeIdByLabel(symbol) {
         console.log("Finding node ID by symbol:", symbol);
         let node = this.tokenNodes.find(node => node.symbol === symbol)?.id;
+    }
+
+    // Add these methods to your GraphManager class
+
+    // Keep track of highlighted elements
+    highlightedNodes = new Set();
+    highlightedEdges = new Set();
+
+    /**
+     * Highlight specific nodes and edges in the graph
+     * @param {Array} nodeIds - Array of node IDs to highlight
+     * @param {Array} edgeIds - Array of edge IDs to highlight
+     */
+    highlight(nodeIds, edgeIds) {
+        // Reset any existing highlights first
+        this.resetHighlights();
+
+        // Store the highlighted elements
+        this.highlightedNodes = new Set(nodeIds);
+        this.highlightedEdges = new Set(edgeIds);
+
+        // Update nodes
+        if (nodeIds && nodeIds.length > 0) {
+            const nodesToUpdate = [];
+
+            nodeIds.forEach(nodeId => {
+                nodesToUpdate.push({
+                    id: nodeId,
+                    borderWidth: 4,        // Increase border width
+                    borderWidthSelected: 6, // Increase selected border width
+                    value: 10,
+                    size: 10,
+                    color: {
+                        border: '#FF9800',  // Orange border
+                        highlight: {
+                            border: '#FF5722' // Darker orange when selected
+                        }
+                    }
+                });
+            });
+
+            // Apply updates to nodes
+            if (nodesToUpdate.length > 0) {
+                this.nodes.update(nodesToUpdate);
+            }
+        }
+
+        // Update edges
+        if (edgeIds && edgeIds.length > 0) {
+            const edgesToUpdate = [];
+
+            edgeIds.forEach(edgeId => {
+                // Find the original edge to preserve its properties
+                const originalEdge = this.edges.get(edgeId);
+
+                if (originalEdge) {
+                    // Store original protocol color
+                    let originalColor = originalEdge.color;
+
+                    // If the edge's protocol isn't selected, it would be gray
+                    // In that case, get the original color from the protocol map
+                    if (originalEdge.protocol &&
+                        !this.selectedProtocols.has(originalEdge.protocol) &&
+                        protocolColorMap[originalEdge.protocol]) {
+                        originalColor = protocolColorMap[originalEdge.protocol].color;
+                    }
+
+                    edgesToUpdate.push({
+                        id: edgeId,
+                        width: 10,  // Triple the width
+                        color: originalColor,           // Restore original color
+                        dashes: false                   // Remove any dashes
+                    });
+                }
+            });
+
+            // Apply updates to edges
+            if (edgesToUpdate.length > 0) {
+                this.edges.update(edgesToUpdate);
+            }
+        }
+
+        return {
+            highlightedNodes: nodeIds ? nodeIds.length : 0,
+            highlightedEdges: edgeIds ? edgeIds.length : 0
+        };
+    }
+
+    /**
+     * Reset all highlights to their original state
+     */
+    resetHighlights() {
+        // Reset nodes
+        if (this.highlightedNodes.size > 0) {
+            const nodesToReset = [];
+
+            this.highlightedNodes.forEach(nodeId => {
+                nodesToReset.push({
+                    id: nodeId,
+                    borderWidth: undefined,        // Reset to default
+                    borderWidthSelected: 3,        // Reset to default
+                    color: {
+                        border: "#ffffff",         // Reset to default
+                        background: "#232323",     // Reset to default
+                        highlight: {
+                            border: "#000000",     // Reset to default
+                            background: "#ffffff"  // Reset to default
+                        }
+                    }
+                });
+            });
+
+            // Apply reset to nodes
+            if (nodesToReset.length > 0) {
+                this.nodes.update(nodesToReset);
+            }
+        }
+
+        // Reset edges
+        if (this.highlightedEdges.size > 0) {
+            const edgesToReset = [];
+
+            this.highlightedEdges.forEach(edgeId => {
+                // Find the original edge in the poolEdges array
+                const originalEdge = this.poolEdges.find(edge => edge.id === edgeId);
+
+                if (originalEdge) {
+                    // Create a styled copy of the edge
+                    const styledEdge = this.styleEdgeByProtocol({...originalEdge});
+
+                    // Add the update
+                    edgesToReset.push({
+                        id: edgeId,
+                        width: originalEdge.width,  // Reset to original width
+                        color: styledEdge.color,    // Reset to styled color
+                        dashes: styledEdge.dashes   // Reset dashes if needed
+                    });
+                }
+            });
+
+            // Apply reset to edges
+            if (edgesToReset.length > 0) {
+                this.edges.update(edgesToReset);
+            }
+        }
+
+        // Clear the sets
+        this.highlightedNodes.clear();
+        this.highlightedEdges.clear();
+
+        return {
+            resetNodes: true,
+            resetEdges: true
+        };
+    }
+
+    /**
+     * Helper method to get token nodes
+     * @returns {Array} - Array of token nodes
+     */
+    getTokenNodes() {
+        return this.tokenNodes;
     }
 }
