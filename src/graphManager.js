@@ -2,6 +2,8 @@ import {Network} from "vis-network";
 import {DataSet} from "vis-data";
 import {protocolColorMap, protocols} from './data.js';
 
+let firstMessage = true;
+
 // Graph Manager class to handle all network visualization operations
 export class GraphManager {
 // Updated constructor without initialization
@@ -339,7 +341,7 @@ export class GraphManager {
         }
     }
 
-// Remove pool edges
+    // Remove pool edges
     removePoolEdges(edgesToRemove) {
         const edgeIds = [];
 
@@ -453,12 +455,35 @@ export class GraphManager {
     processWebSocketData(data) {
         console.log("Processing new websocket data");
 
+        let result;
         if (data.new_pairs) {
             // Process the new_pairs data
-            this.processNewPairs(data.new_pairs);
+            result = this.processNewPairs(data.new_pairs);
         }
 
-        // You might want to handle other data types here as well
+        if (firstMessage) {
+            // For the first message, do a full update
+            this.updateNetworkStructure();
+            firstMessage = false;
+        } else if (result.addedNodes > 0 || result.addedEdges > 0) {
+            // For subsequent messages, update incrementally
+
+            // Add just the new nodes to the visualization if they're selected
+            if (result.addedNodes > 0 && result.newTokenNodes) {
+                const nodesToAdd = result.newTokenNodes.filter(node =>
+                    this.selectedNodes.has(node.id)
+                );
+                if (nodesToAdd.length > 0) {
+                    this.nodes.add(nodesToAdd);
+                }
+            }
+
+            // Add just the new edges to the visualization using addPoolEdges
+            if (result.addedEdges > 0 && result.newPoolEdges) {
+                this.addPoolEdges(result.newPoolEdges);
+            }
+        }
+
     }
 
     // Process new pairs data specifically
@@ -481,6 +506,9 @@ export class GraphManager {
                 }
 
                 // Create a new token node
+                if (token.symbol === "0x0000000000000000000000000000000000000000") {
+                    token.symbol = "ETH";
+                }
                 const tokenNode = {
                     id: token.address,
                     value: 1,
@@ -537,9 +565,6 @@ export class GraphManager {
         if (newTokenNodes.length > 0) {
             this.createNodeSelectionUI();
         }
-
-        // Update the visualization
-        this.updateNetworkStructure();
 
         return {
             addedNodes: newTokenNodes.length,

@@ -39,17 +39,17 @@ export function startUpdateLoop(graphManager) {
         socket.addEventListener('message', (event) => {
             console.log('Message from server:', event.data);
 
-            if (!processedFirstMessage) {
-                // initialise graph
-                // Try to parse the message as JSON
-                const data = JSON.parse(event.data);
-                processWebSocketMessage(data);
-                processedFirstMessage = true;
-            }
+            // if (!processedFirstMessage) {
+            //     // initialise graph
+            //     // Try to parse the message as JSON
+            //     processedFirstMessage = true;
+            // }
 
             try {
                 // Here you would process the received data
                 // and update the graph based on message content
+                const data = JSON.parse(event.data);
+                processWebSocketMessage(data);
             } catch (parseError) {
                 console.error('Error parsing WebSocket message:', parseError);
                 console.log('Raw message:', event.data);
