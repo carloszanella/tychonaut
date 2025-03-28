@@ -80,28 +80,24 @@ async function runMockUpdateSequence() {
 
 // Start the update loop with a reference to the graph manager
 export function startUpdateLoop(graphManager) {
-    if (isUpdating) {
-        return false;
-    }
-
-    // Store reference to graph manager
-    graphManagerRef = graphManager;
-
-    if (!graphManagerRef) {
-        console.error("GraphManager is null or undefined!");
-        return false;
-    }
-
-    // Set the flag
-    isUpdating = true;
-
-    // Run the async update sequence
-    runMockUpdateSequence().catch(err => {
-        console.error("Error in update sequence:", err);
-        isUpdating = false;
-    });
-
-    return true;
+    // // Store reference to graph manager
+    // graphManagerRef = graphManager;
+    //
+    // if (!graphManagerRef) {
+    //     console.error("GraphManager is null or undefined!");
+    //     return false;
+    // }
+    //
+    // // Set the flag
+    // isUpdating = true;
+    //
+    // // Run the async update sequence
+    // runMockUpdateSequence().catch(err => {
+    //     console.error("Error in update sequence:", err);
+    //     isUpdating = false;
+    // });
+    //
+    // return true;
 }
 
 // Stop the update loop

@@ -40,6 +40,7 @@ export class GraphManager {
         };
 
         const options = {
+            // autoResize: false,
             nodes: {
                 shape: "circle",
                 color: {
@@ -61,6 +62,10 @@ export class GraphManager {
                 // repulsion: {
                 //     nodeDistance: 70,
                 // }
+                barnesHut: {
+                    sprintLength: 500,
+                    gravitationalConstant: -1200,
+                }
             }
         };
 
