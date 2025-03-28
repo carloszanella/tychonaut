@@ -81,6 +81,21 @@ export class GraphManager {
 
         // Clear any existing content
         nodeSelectionContainer.innerHTML = "";
+        
+        // Create search bar
+        const searchInput = document.createElement("input");
+        searchInput.type = "text";
+        searchInput.id = "node-search";
+        searchInput.className = "token-search";
+        searchInput.placeholder = "Search tokens...";
+        
+        // Add the search input at the top
+        nodeSelectionContainer.appendChild(searchInput);
+        
+        // Create checkboxes container
+        const checkboxesContainer = document.createElement("div");
+        checkboxesContainer.className = "checkbox-container";
+        nodeSelectionContainer.appendChild(checkboxesContainer);
 
         // Create a checkbox for each token node
         this.tokenNodes.forEach((node) => {
@@ -98,11 +113,31 @@ export class GraphManager {
 
             checkboxItem.appendChild(checkbox);
             checkboxItem.appendChild(label);
-            nodeSelectionContainer.appendChild(checkboxItem);
+            checkboxesContainer.appendChild(checkboxItem);
 
             // Add event listener to each checkbox
             checkbox.addEventListener("change", () => {
                 this.toggleNode(node.id, checkbox.checked);
+            });
+        });
+        
+        // Add event listener to search input
+        searchInput.addEventListener("input", () => {
+            const searchText = searchInput.value.toLowerCase();
+            
+            // Get all checkbox items
+            const checkboxItems = checkboxesContainer.querySelectorAll(".checkbox-item");
+            
+            // Filter the checkboxes based on search text
+            checkboxItems.forEach((item) => {
+                const label = item.querySelector("label");
+                const labelText = label.textContent.toLowerCase();
+                
+                if (labelText.includes(searchText)) {
+                    item.style.display = "flex"; // Show item
+                } else {
+                    item.style.display = "none"; // Hide item
+                }
             });
         });
     }
@@ -647,14 +682,16 @@ export class GraphManager {
             nodeIds.forEach(nodeId => {
                 nodesToUpdate.push({
                     id: nodeId,
-                    borderWidth: 4,        // Increase border width
-                    borderWidthSelected: 6, // Increase selected border width
-                    value: 10,
-                    size: 10,
+                    borderWidth: 4,
+                    borderWidthSelected: 6,
+                    font: {
+                        size: 12,
+                    },
                     color: {
                         border: '#FF9800',  // Orange border
                         highlight: {
-                            border: '#FF5722' // Darker orange when selected
+                            border: '#000000',
+                            color: '#F66733'
                         }
                     }
                 });

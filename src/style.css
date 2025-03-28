@@ -1,5 +1,5 @@
 :root {
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: monospace;
     line-height: 1.5;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.87);
@@ -351,4 +351,70 @@ button:disabled {
 .number-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+.token-search {
+    width: calc(100% - 16px);
+    margin: 8px;
+    padding: 12px;
+    background-color: #1c1c1e;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.token-search::placeholder {
+    color: #999;
+}
+
+.token-search:focus {
+    border-color: #2196F3;
+}
+
+.checkbox-container {
+    margin-top: 5px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 0 8px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.checkbox-item input[type="checkbox"] {
+    margin-right: 10px;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #007bff;
+    border-radius: 4px;
+    background-color: transparent;
+    position: relative;
+    cursor: pointer;
+}
+
+.checkbox-item input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    color: white;
+    font-size: 12px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.checkbox-item input[type="checkbox"]:checked {
+    background-color: #007bff;
+}
+
+.checkbox-item label {
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
 }
