@@ -262,8 +262,8 @@ button:disabled {
 }
 
 .simulate-button {
-    background-color: #555;
-    color: white;
+    background-color: #f69416;
+    color: #000000;
     border: none;
 }
 
@@ -273,8 +273,8 @@ button:disabled {
 
 .swap-button {
     margin-top: 12px;
-    background-color: #4caf50;
-    color: white;
+    background-color: #f69416;
+    color: #000000;
     border: none;
 }
 
@@ -392,7 +392,7 @@ button:disabled {
     appearance: none;
     width: 20px;
     height: 20px;
-    border: 2px solid #007bff;
+    border: 2px solid #f69416;
     border-radius: 4px;
     background-color: transparent;
     position: relative;
@@ -402,7 +402,7 @@ button:disabled {
 .checkbox-item input[type="checkbox"]:checked::after {
     content: "✓";
     position: absolute;
-    color: white;
+    color: #000000;
     font-size: 12px;
     top: 50%;
     left: 50%;
@@ -410,7 +410,7 @@ button:disabled {
 }
 
 .checkbox-item input[type="checkbox"]:checked {
-    background-color: #007bff;
+    background-color: #f8b359;
 }
 
 .checkbox-item label {
