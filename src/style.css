@@ -352,7 +352,3 @@ button:disabled {
     -webkit-appearance: none;
     margin: 0;
 }
-
-.number-input[type="number"] {
-    -moz-appearance: textfield;
-}

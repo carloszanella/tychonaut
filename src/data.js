@@ -9,20 +9,16 @@ export const protocols = [
 
 export const protocolColorMap = {
     "uniswap_v2": {
-        color: "#7968df",
-        // highlight?: string,
-        // hover?: string,
-        // inherit?: boolean | string,
-        // opacity?: number,
+        color: "#5172E7",  // Rich blue
     },
     "uniswap_v3": {
-        color: "#96b642",
+        color: "#4ECDC4",  // Teal/turquoise
     },
     "uniswap_v4": {
-        color: "#fbd434",
+        color: "#FFB81C",  // Golden yellow
     },
     "vm:balancer_v2": {
-        color: "#f3985c",
+        color: "#FF7F50",  // Coral orange
     }
 }
 

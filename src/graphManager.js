@@ -44,13 +44,14 @@ export class GraphManager {
                     background: "#232323",
                     highlight: {
                         border: "#000000",
-                        background: "#ffffff",
+                        background: "#F66733",
                     }
                 },
                 borderWidthSelected: 3,
                 font: {
                     size: 10,
                     color: "#ffffff",
+                    face: "monospace",
                 },
             },
             physics: {
