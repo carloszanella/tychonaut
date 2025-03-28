@@ -106,7 +106,7 @@ body {
     align-self: start;
     width: 250px;
     max-height: calc(100% - 40px);
-    overflow: hidden;
+    overflow: auto;
 }
 
 .panel-content {
@@ -201,6 +201,12 @@ button:disabled {
     padding: 6px 10px;
     min-width: 80px;
     text-align: center;
+    cursor: pointer;
+    border: 1px solid #444;
+}
+
+.token-select:hover {
+    border-color: #646cff;
 }
 
 .swap-container input {
@@ -213,21 +219,57 @@ button:disabled {
     text-align: right;
 }
 
+.swap-container input:focus {
+    outline: none;
+    border-color: #646cff;
+}
+
+/* Output fields styling */
+.output-row {
+    margin-top: 4px;
+}
+
+.output-row label {
+    color: #4caf50;
+}
+
 .swap-container input.highlight {
     color: #4caf50;
     border-color: #4caf50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+/* Button styles */
+.simulate-button, .swap-button {
+    width: 100%;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.simulate-button {
+    background-color: #555;
+    color: white;
+    border: none;
+}
+
+.simulate-button:hover {
+    background-color: #666;
 }
 
 .swap-button {
-    margin-top: 8px;
+    margin-top: 12px;
     background-color: #4caf50;
     color: white;
     border: none;
 }
 
-.swap-button:hover:not(:disabled) {
+.swap-button:hover {
     background-color: #45a049;
-    border-color: #45a049;
 }
 
 /* Light mode styles */
@@ -253,5 +295,23 @@ button:disabled {
     .token-select, .swap-container input {
         background-color: #f0f0f0;
         border-color: #ddd;
+    }
+
+    .output-row label {
+        color: #2e7d32;
+    }
+
+    .swap-container input.highlight {
+        color: #2e7d32;
+        border-color: #2e7d32;
+        background-color: rgba(46, 125, 50, 0.05);
+    }
+
+    .simulate-button {
+        background-color: #777;
+    }
+
+    .simulate-button:hover {
+        background-color: #666;
     }
 }

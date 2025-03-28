@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <link rel="icon" type="image/svg+xml" href="/vite.svg"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Tycho Interactive</title>
+    <title>Tychonaut</title>
     <link href="/src/style.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
@@ -18,7 +18,7 @@
     <div class="overlay-elements">
         <!-- Floating title panel -->
         <div class="panel title-panel">
-            <h1>Tycho Interactive</h1>
+            <h1>Tychonaut</h1>
         </div>
 
         <!-- Left panel -->
@@ -43,12 +43,12 @@
             </div>
         </div>
 
-        <!-- Right panel - placeholder for future functionality -->
+        <!-- Right panel - swap functionality -->
         <div class="panel right-panel">
             <div class="panel-content">
                 <h3>Swap</h3>
                 <div class="swap-container">
-                    <!-- Placeholder for future swap functionality -->
+                    <!-- Input fields -->
                     <div class="swap-row">
                         <label>Sell token</label>
                         <div class="token-select">WETH</div>
@@ -59,17 +59,34 @@
                     </div>
                     <div class="swap-row">
                         <label>Sell Amount</label>
-                        <input type="text" value="1.0" disabled/>
+                        <input type="text" value="1.0"/>
                     </div>
+
+                    <!-- Simulate button -->
+                    <button class="simulate-button">Simulate</button>
+
+                    <!-- Output fields (highlighted in green) -->
+                    <div class="swap-row output-row">
+                        <label>Buy Amount</label>
+                        <input type="text" class="highlight" value="500.65" readonly/>
+                    </div>
+                    <div class="swap-row output-row">
+                        <label>Price</label>
+                        <input type="text" class="highlight" value="1.754" readonly/>
+                    </div>
+                    <div class="swap-row output-row">
+                        <label>Gas Usage</label>
+                        <input type="text" class="highlight" value="20000" readonly/>
+                    </div>
+
+                    <!-- Min buy amount input -->
                     <div class="swap-row">
                         <label>Min Buy Amount</label>
-                        <input type="text" class="highlight" value="500.65" disabled/>
+                        <input type="text" value="1.0"/>
                     </div>
-                    <div class="swap-row">
-                        <label>Price</label>
-                        <input type="text" class="highlight" value="1.754" disabled/>
-                    </div>
-                    <button class="swap-button" disabled>Execute Swap</button>
+
+                    <!-- Execute button -->
+                    <button class="swap-button">Execute Swap</button>
                 </div>
             </div>
         </div>
