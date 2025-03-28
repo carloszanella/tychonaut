@@ -31,29 +31,7 @@ body {
 #app {
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Header styles */
-.app-header {
-    background-color: #1a1a1a;
-    padding: 0.8rem 1.5rem;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    z-index: 10;
-}
-
-.app-header h1 {
-    font-size: 1.8rem;
-    margin: 0;
-}
-
-/* Main container layout */
-.main-container {
-    flex: 1;
     position: relative;
-    overflow: hidden;
 }
 
 /* Network container that spans the entire space */
@@ -70,8 +48,8 @@ body {
     height: 100%;
 }
 
-/* Overlay panels container */
-.overlay-panels {
+/* Overlay elements container */
+.overlay-elements {
     position: absolute;
     top: 0;
     left: 0;
@@ -79,8 +57,13 @@ body {
     height: 100%;
     pointer-events: none; /* Allow clicks to pass through to the network */
     padding: 20px;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-areas:
+    "left title right"
+    "left empty right";
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto 1fr;
+    gap: 20px;
 }
 
 /* Panel styles */
@@ -91,19 +74,39 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     padding: 16px;
     pointer-events: auto; /* Re-enable click events on the panels */
-    max-height: calc(100% - 40px);
+}
+
+/* Title panel */
+.title-panel {
+    grid-area: title;
+    justify-self: center;
+    padding: 12px 30px;
+    align-self: start;
+}
+
+.title-panel h1 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+/* Left panel */
+.left-panel {
+    grid-area: left;
+    align-self: start;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     width: 250px;
+    max-height: calc(100% - 40px);
+    overflow: hidden;
 }
 
-.left-panel {
-    align-self: flex-start;
-}
-
+/* Right panel */
 .right-panel {
-    align-self: flex-start;
+    grid-area: right;
+    align-self: start;
+    width: 250px;
+    max-height: calc(100% - 40px);
+    overflow: hidden;
 }
 
 .panel-content {
@@ -232,11 +235,6 @@ button:disabled {
     :root {
         color: #213547;
         background-color: #ffffff;
-    }
-
-    .app-header {
-        background-color: #f0f0f0;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .panel {

@@ -57,10 +57,10 @@ export class GraphManager {
                 },
             },
             physics: {
-                solver: "repulsion",
-                repulsion: {
-                    nodeDistance: 70,
-                }
+                // solver: "repulsion",
+                // repulsion: {
+                //     nodeDistance: 70,
+                // }
             }
         };
 
