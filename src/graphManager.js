@@ -1,5 +1,6 @@
 import {Network} from "vis-network";
 import {DataSet} from "vis-data";
+import {protocolColorMap} from './data.js';
 
 // Graph Manager class to handle all network visualization operations
 export class GraphManager {
@@ -9,6 +10,11 @@ export class GraphManager {
         this.edges = null;
         this.network = null;
         this.selectedNodes = new Set(); // Track selected nodes
+
+        // Set color of pool edges based on edge.protocol
+        poolEdges.forEach(edge => {
+            edge.color = protocolColorMap[edge.protocol].color;
+        });
 
         // Store the token and pool data
         this.tokenNodes = tokenNodes;
@@ -33,7 +39,15 @@ export class GraphManager {
         const options = {
             nodes: {
                 shape: "circle",
-                // size: 10,
+                color: {
+                    border: "#000000",
+                    background: "#ffffff",
+                    highlight: {
+                        border: "#000000",
+                        background: "#ffffff",
+                    }
+                },
+                borderWidthSelected: 3,
                 font: {
                     size: 10,
                 },
@@ -44,7 +58,7 @@ export class GraphManager {
                 // },
             },
             // edges: {
-            //     width: 0.15,
+            //     widthConstraint: 10,
             // },
         };
 
@@ -164,39 +178,60 @@ export class GraphManager {
 
     // Public methods for external update
 
-    // Update node data - can be called from external loop
-    updateNodeData(newNodeData) {
-        // Update the stored node data
-        this.tokenNodes = newNodeData;
-
-        // Refresh the network with new data
-        this.updateNetwork();
-
-        // Optionally refresh the UI if node structure has changed
-        // this.createNodeSelectionUI();
-    }
-
-    // Update edge data - can be called from external loop
-    updateEdgeData(newEdgeData) {
-        // Update the stored edge data
-        this.poolEdges = newEdgeData;
-
-        // Refresh the network with new data
-        this.updateNetwork();
-    }
-
-    // Get current nodes data
-    getNodeData() {
-        return this.tokenNodes;
-    }
-
-    // Get current edges data
-    getEdgeData() {
-        return this.poolEdges;
-    }
-
     // Get currently selected node IDs
     getSelectedNodes() {
         return [...this.selectedNodes];
+    }
+
+    // Add new pool edges:
+    // Edge: {
+    //  from: number,  - Source token Address
+    //  to: number,  - Target token Address
+    //  value: number,  - The TVL value of the pool
+    //  protocol: string,
+    // }
+    addPoolEdges(newEdges) {
+        // Add the new edges to the stored data
+        this.poolEdges = [...this.poolEdges, ...newEdges];
+
+        // Refresh the network with updated data
+        this.updateNetwork();
+    }
+
+    // Update existing pool values
+    updatePoolValues(updatedEdges) {
+        // Update values for existing edges
+        updatedEdges.forEach(updatedEdge => {
+            const index = this.poolEdges.findIndex(
+                edge => edge.from === updatedEdge.from && edge.to === updatedEdge.to
+            );
+
+            if (index !== -1) {
+                // Update the edge value and width
+                this.poolEdges[index].value = updatedEdge.value;
+                this.poolEdges[index].width = updatedEdge.width || this.poolEdges[index].width;
+            }
+        });
+
+        // Refresh the network with updated data
+        this.updateNetwork();
+    }
+
+    // Remove pool edges
+    removePoolEdges(edgesToRemove) {
+        // edgesToRemove is an array of objects with from and to properties
+        edgesToRemove.forEach(edgeToRemove => {
+            this.poolEdges = this.poolEdges.filter(
+                edge => !(edge.from === edgeToRemove.from && edge.to === edgeToRemove.to)
+            );
+        });
+
+        // Refresh the network with updated data
+        this.updateNetwork();
+    }
+
+    // Get current pool edges data
+    getPoolEdges() {
+        return this.poolEdges;
     }
 }

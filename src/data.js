@@ -1,5 +1,18 @@
 // Initial data for the network visualization
 
+export const protocolColorMap = {
+    "uniswap_v2": {
+        color: "#2f00ff",
+        // highlight?: string,
+        // hover?: string,
+        // inherit?: boolean | string,
+        // opacity?: number,
+    },
+    "uniswap_v3": {
+        color: "#658808",
+    }
+}
+
 // Token nodes data
 export const tokenNodes = [
     {id: 1, value: 1, label: "USDC", size: 1},
@@ -16,15 +29,18 @@ export const tokenNodes = [
 
 // Pool edges data
 export const poolEdges = [
-    {from: 2, to: 8, value: 3, width: 1},
-    {from: 2, to: 9, value: 3, width: 1},
-    {from: 2, to: 10, value: 4, width: 1},
-    {from: 4, to: 6, value: 6, width: 1},
-    {from: 5, to: 7, value: 2, width: 1},
-    {from: 4, to: 5, value: 3, width: 1},
-    {from: 9, to: 10, value: 2, width: 1},
-    {from: 2, to: 3, value: 1, width: 1},
-    {from: 3, to: 9, value: 2, width: 1},
-    {from: 5, to: 3, value: 3, width: 1},
-    {from: 2, to: 7, value: 1, width: 1},
+    {from: 2, to: 8, value: 3, width: 1, protocol: "uniswap_v2"},
+    {from: 2, to: 9, value: 3, width: 1, protocol: "uniswap_v3"},
+    {from: 2, to: 10, value: 4, width: 1, protocol: "uniswap_v3"},
+    {from: 4, to: 6, value: 6, width: 1, protocol: "uniswap_v2"},
+    {from: 5, to: 7, value: 2, width: 1, protocol: "uniswap_v2"},
+    {from: 4, to: 5, value: 3, width: 1, protocol: "uniswap_v3"},
+    {from: 9, to: 10, value: 2, width: 1, protocol: "uniswap_v2"},
+    {from: 9, to: 10, value: 4, width: 1, protocol: "uniswap_v3"},
+    {from: 2, to: 3, value: 5, width: 1, protocol: "uniswap_v3"},
+    {from: 3, to: 9, value: 2, width: 1, protocol: "uniswap_v3"},
+    {from: 5, to: 3, value: 3, width: 1, protocol: "uniswap_v3"},
+    {from: 2, to: 7, value: 1, width: 1, protocol: "uniswap_v2"},
+    {from: 1, to: 4, value: 5, width: 1, protocol: "uniswap_v3"},
+    {from: 1, to: 5, value: 5, width: 1, protocol: "uniswap_v3"},
 ];
