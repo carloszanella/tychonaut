@@ -93,6 +93,51 @@ function setupControls() {
                     sellAmount
                 );
 
+                if (apiResult && apiResult.success) {
+                    // Calculate price
+                    const price = parseFloat(apiResult.output_amount) / parseFloat(apiResult.input_amount);
+                    const buyAmount = parseFloat(apiResult.output_amount);
+                    const gasEstimate = parseFloat(apiResult.gas_estimate);
+
+                    // Update the output boxes
+                    // Get all highlight inputs in output rows
+                    const outputElements = document.querySelectorAll('.output-row input.highlight');
+
+                    // Find the price and gas elements by their parent label text
+                    outputElements.forEach(element => {
+                        const label = element.parentElement.querySelector('label');
+                        if (label) {
+                            if (label.textContent === 'Buy Amount') {
+                                element.value = buyAmount.toFixed(6);
+                            } else if (label.textContent === 'Price') {
+                                element.value = price.toFixed(6);
+                            } else if (label.textContent === 'Gas Usage') {
+                                element.value = gasEstimate.toLocaleString();
+                            }
+                        }
+                    });
+
+                    // Set a suggested minimum buy amount (e.g., 99% of expected output)
+                    const minBuyAmountInput = document.getElementById('min-buy-amount');
+                    if (minBuyAmountInput) {
+                        const suggestedMin = buyAmount * 0.99; // 1% slippage
+                        minBuyAmountInput.value = suggestedMin.toFixed(6);
+                    }
+                } else {
+                    // Handle API error or missing response
+                    console.error("API call failed or returned unsuccessful result");
+
+                    const outputElements = document.querySelectorAll('.output-row input.highlight');
+                    outputElements.forEach(element => {
+                        element.value = "N/A";
+                    });
+
+                    const minBuyAmountInput = document.getElementById('min-buy-amount');
+                    if (minBuyAmountInput) {
+                        minBuyAmountInput.value = "0";
+                    }
+                }
+
                 console.log("Simulation API result:", apiResult);
             } else {
                 console.error("Failed to find route:", result.reason);

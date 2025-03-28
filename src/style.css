@@ -227,7 +227,7 @@ button:disabled {
     color: inherit;
     font-weight: 500;
     white-space: nowrap;
-    min-width: 100px;
+    min-width: 120px;
     margin-right: 10px;
 }
 
