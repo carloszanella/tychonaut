@@ -106,6 +106,7 @@ function setupControls() {
         console.log("Swap button found, adding event listener");
         swapButton.addEventListener('click', () => {
             console.log('Execute Swap button clicked');
+            graphManager.resetHighlights();
             // In the future, this would execute the swap
         });
     } else {

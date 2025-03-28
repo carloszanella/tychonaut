@@ -150,6 +150,11 @@ export function find_best_route(nodes, edges, startNodeId, endNodeId) {
 
 // Function to call the simulation API
 export async function callSimulationAPI(sellToken, pools, amount) {
+    console.log(JSON.stringify({
+        sell_token: sellToken,
+        pools: pools,
+        amount: amount
+    }));
     try {
         const response = await fetch('http://0.0.0.0:3000/api/simulate', {
             method: 'POST',
@@ -159,7 +164,7 @@ export async function callSimulationAPI(sellToken, pools, amount) {
             body: JSON.stringify({
                 sell_token: sellToken,
                 pools: pools,
-                amount: amount
+                amount: parseFloat(amount)
             })
         });
 

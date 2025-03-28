@@ -47,6 +47,7 @@ export class GraphManager {
                         background: "#F66733",
                     }
                 },
+                borderWidth: 1,
                 borderWidthSelected: 3,
                 font: {
                     size: 10,
@@ -82,17 +83,17 @@ export class GraphManager {
 
         // Clear any existing content
         nodeSelectionContainer.innerHTML = "";
-        
+
         // Create search bar
         const searchInput = document.createElement("input");
         searchInput.type = "text";
         searchInput.id = "node-search";
         searchInput.className = "token-search";
         searchInput.placeholder = "Search tokens...";
-        
+
         // Add the search input at the top
         nodeSelectionContainer.appendChild(searchInput);
-        
+
         // Create checkboxes container
         const checkboxesContainer = document.createElement("div");
         checkboxesContainer.className = "checkbox-container";
@@ -121,19 +122,19 @@ export class GraphManager {
                 this.toggleNode(node.id, checkbox.checked);
             });
         });
-        
+
         // Add event listener to search input
         searchInput.addEventListener("input", () => {
             const searchText = searchInput.value.toLowerCase();
-            
+
             // Get all checkbox items
             const checkboxItems = checkboxesContainer.querySelectorAll(".checkbox-item");
-            
+
             // Filter the checkboxes based on search text
             checkboxItems.forEach((item) => {
                 const label = item.querySelector("label");
                 const labelText = label.textContent.toLowerCase();
-                
+
                 if (labelText.includes(searchText)) {
                     item.style.display = "flex"; // Show item
                 } else {
@@ -759,16 +760,16 @@ export class GraphManager {
             this.highlightedNodes.forEach(nodeId => {
                 nodesToReset.push({
                     id: nodeId,
-                    borderWidth: undefined,        // Reset to default
+                    borderWidth: 1,        // Reset to default
                     borderWidthSelected: 3,        // Reset to default
                     color: {
-                        border: "#ffffff",         // Reset to default
-                        background: "#232323",     // Reset to default
+                        border: "#ffffff",
+                        background: "#232323",
                         highlight: {
-                            border: "#000000",     // Reset to default
-                            background: "#F66733"  // Reset to default
+                            border: "#000000",
+                            background: "#F66733",
                         }
-                    }
+                    },
                 });
             });
 
