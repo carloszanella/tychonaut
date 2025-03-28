@@ -1,118 +1,108 @@
 // Mock update functionality to test the network visualization
 
 // Flag to control the update loop
+let socket = null;
 let isUpdating = false;
-let updateInterval = null;
-
+let processedFirstMessage = false;
 // Reference to the graph manager (will be set when starting the loop)
 let graphManagerRef = null;
 
-// Delay helper function - returns a promise that resolves after the specified time
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+// Start the update loop with a reference to the graph manager
+export function startUpdateLoop(graphManager) {
+    if (isUpdating) {
+        console.log("Update loop is already running");
+        return false;
+    }
 
-// Mock data for pool operations
-const mockNewPool = {
-    from: 1, // USDC
-    to: 2,   // WETH
-    value: 8,
-    width: 2,
-    protocol: "uniswap_v3"
-};
+    // Store reference to graph manager
+    graphManagerRef = graphManager;
 
-const mockUpdatePool = {
-    id: "0x1246",
-    from: 4, // DAI
-    to: 5,   // USDT
-    value: 10, // Increased value
-    width: 2,
-    protocol: "uniswap_v3"
-};
+    if (!graphManagerRef) {
+        console.error("GraphManager is null or undefined!");
+        return false;
+    }
 
-const mockRemovePool = {
-    id: "0x1236",
-    from: 2, // WETH
-    to: 10,  // LDO
-    protocol: "uniswap_v3"
-};
+    // Set the flag
+    isUpdating = true;
+    console.log("Starting WebSocket connection...");
 
-// For testing, use shorter delays
-const DELAY_MS = 5000; // 5 seconds for testing
-
-// Async function to run the demo update sequence
-async function runMockUpdateSequence() {
     try {
-        // Check if graph manager is available
-        if (!graphManagerRef) {
-            console.error("Graph manager not available");
-            return;
-        }
+        // Create WebSocket connection
+        socket = new WebSocket('ws://0.0.0.0:3000/ws');
 
-        // Step 1: Wait, then add a new pool
-        await delay(DELAY_MS);
+        // Connection opened
+        socket.addEventListener('open', (event) => {
+            console.log('WebSocket connection established');
+        });
 
-        if (!isUpdating) return; // Stop if updates were canceled
+        // Listen for messages
+        socket.addEventListener('message', (event) => {
+            console.log('Message from server:', event.data);
 
-        console.log("Adding new pool: USDC <-> WETH");
-        graphManagerRef.addPoolEdges([mockNewPool]);
+            if (!processedFirstMessage) {
+                // initialise graph
+                // Try to parse the message as JSON
+                const data = JSON.parse(event.data);
+                processWebSocketMessage(data);
+                processedFirstMessage = true;
+            }
 
-        // Step 2: Wait, then update a pool
-        await delay(DELAY_MS);
+            try {
+                // Here you would process the received data
+                // and update the graph based on message content
+            } catch (parseError) {
+                console.error('Error parsing WebSocket message:', parseError);
+                console.log('Raw message:', event.data);
+            }
+        });
 
-        if (!isUpdating) return; // Stop if updates were canceled
+        // Connection error
+        socket.addEventListener('error', (event) => {
+            console.error('WebSocket error:', event);
+            isUpdating = false;
+        });
 
-        console.log("Updating pool: DAI <-> USDT (increasing value)");
-        graphManagerRef.updatePoolValues([mockUpdatePool]);
+        // Connection closed
+        socket.addEventListener('close', (event) => {
+            console.log('WebSocket connection closed', event.code, event.reason);
+            isUpdating = false;
+        });
 
-        // Step 3: Wait, then remove a pool
-        await delay(DELAY_MS);
-
-        if (!isUpdating) return; // Stop if updates were canceled
-
-        console.log("Removing pool: WETH <-> LDO");
-        graphManagerRef.removePoolEdges([mockRemovePool]);
-
+        return true;
     } catch (error) {
-        console.error("Error in mock update sequence:", error);
-    } finally {
+        console.error("Error starting WebSocket connection:", error);
         isUpdating = false;
+        return false;
     }
 }
 
-// Start the update loop with a reference to the graph manager
-export function startUpdateLoop(graphManager) {
-    // // Store reference to graph manager
-    // graphManagerRef = graphManager;
-    //
-    // if (!graphManagerRef) {
-    //     console.error("GraphManager is null or undefined!");
-    //     return false;
-    // }
-    //
-    // // Set the flag
-    // isUpdating = true;
-    //
-    // // Run the async update sequence
-    // runMockUpdateSequence().catch(err => {
-    //     console.error("Error in update sequence:", err);
-    //     isUpdating = false;
-    // });
-    //
-    // return true;
+// Process incoming WebSocket messages
+function processWebSocketMessage(data) {
+    // Log the entire message
+    console.log('Processing WebSocket message');
+
+    // Process the message with the graph manager
+    if (graphManagerRef) {
+        graphManagerRef.processWebSocketData(data);
+    }
 }
 
 // Stop the update loop
 export function stopUpdateLoop() {
+    console.log("Stopping WebSocket connection");
+
     if (!isUpdating) {
+        console.log("Update loop is not running");
         return false;
     }
 
-    isUpdating = false;
-
-    // If there's a timeout or interval, we would clear it here
-    if (updateInterval) {
-        clearInterval(updateInterval);
-        updateInterval = null;
+    if (socket) {
+        // Close the WebSocket connection properly
+        socket.close(1000, "User requested disconnect");
+        socket = null;
     }
 
+    isUpdating = false;
+    console.log("WebSocket connection closed");
     return true;
 }

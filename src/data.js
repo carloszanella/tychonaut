@@ -3,7 +3,8 @@
 export const protocols = [
     "uniswap_v2",
     "uniswap_v3",
-    "balancer_v2",
+    "vm:balancer_v2",
+    "uniswap_v4",
 ];
 
 export const protocolColorMap = {
@@ -17,7 +18,10 @@ export const protocolColorMap = {
     "uniswap_v3": {
         color: "#96b642",
     },
-    "balancer_v2": {
+    "uniswap_v4": {
+        color: "#fbd434",
+    },
+    "vm:balancer_v2": {
         color: "#f3985c",
     }
 }

@@ -4,7 +4,8 @@ import {protocolColorMap, protocols} from './data.js';
 
 // Graph Manager class to handle all network visualization operations
 export class GraphManager {
-    constructor(tokenNodes, poolEdges) {
+// Updated constructor without initialization
+    constructor(tokenNodes = [], poolEdges = []) {
         // Network components
         this.nodes = null;
         this.edges = null;
@@ -12,18 +13,11 @@ export class GraphManager {
         this.selectedNodes = new Set(); // Track selected nodes
         this.selectedProtocols = new Set(); // Track selected protocols
 
-        // Set color of pool edges based on edge.protocol
-        poolEdges.forEach(edge => {
-            if (edge.protocol && protocolColorMap[edge.protocol]) {
-                edge.color = protocolColorMap[edge.protocol].color;
-            }
-        });
+        // Empty data containers to start with
+        this.tokenNodes = [];
+        this.poolEdges = [];
 
-        // Store the token and pool data
-        this.tokenNodes = tokenNodes;
-        this.poolEdges = poolEdges;
-
-        // Initialize the network
+        // Initialize just the network container
         this.initializeNetwork();
     }
 
@@ -44,8 +38,8 @@ export class GraphManager {
             nodes: {
                 shape: "circle",
                 color: {
-                    border: "#000000",
-                    background: "#ffffff",
+                    border: "#ffffff",
+                    background: "#232323",
                     highlight: {
                         border: "#000000",
                         background: "#ffffff",
@@ -54,7 +48,7 @@ export class GraphManager {
                 borderWidthSelected: 3,
                 font: {
                     size: 10,
-                    color: "#000000",
+                    color: "#ffffff",
                 },
             },
             physics: {
@@ -63,8 +57,8 @@ export class GraphManager {
                 //     nodeDistance: 70,
                 // }
                 barnesHut: {
-                    sprintLength: 500,
-                    gravitationalConstant: -1200,
+                    springLength: 600,
+                    gravitationalConstant: -2000,
                 }
             }
         };
@@ -453,5 +447,103 @@ export class GraphManager {
         }
 
         return edge;
+    }
+
+    // Process websocket data and update the graph
+    processWebSocketData(data) {
+        console.log("Processing new websocket data");
+
+        if (data.new_pairs) {
+            // Process the new_pairs data
+            this.processNewPairs(data.new_pairs);
+        }
+
+        // You might want to handle other data types here as well
+    }
+
+    // Process new pairs data specifically
+    processNewPairs(newPairs) {
+        // Track new nodes and edges to add
+        const newTokenNodes = [];
+        const newPoolEdges = [];
+        const tokenAddressMap = new Map(); // To avoid duplicate tokens
+
+        // First, get all existing token symbols for reference
+        const existingTokenAddresses = new Set(this.tokenNodes.map(node => node.id));
+
+        // Iterate through each new pair
+        Object.entries(newPairs).forEach(([pairAddress, pairData]) => {
+            // Process tokens first
+            pairData.tokens.forEach(token => {
+                // Skip if we already have this token
+                if (existingTokenAddresses.has(token.address) || tokenAddressMap.has(token.address)) {
+                    return;
+                }
+
+                // Create a new token node
+                const tokenNode = {
+                    id: token.address,
+                    value: 1,
+                    label: token.symbol,
+                };
+
+                // Add to our tracking maps
+                tokenAddressMap.set(token.address, tokenNode);
+                if (tokenAddressMap.has(token.address)) {
+                    newTokenNodes.push(tokenNode);
+                }
+            });
+
+            // Now process the pair/edge
+            // Find token IDs (either from existing tokens or newly added ones)
+            let token0Id = pairData.tokens[0].address;
+            let token1Id = pairData.tokens[1].address;
+
+            // Find in existing tokens
+            const token0Existing = this.tokenNodes.find(n => n.id === token0Id);
+            const token1Existing = this.tokenNodes.find(n => n.id === token1Id);
+
+            // If we have both tokens, create the edge
+            if (token0Id && token1Id) {
+                const poolEdge = {
+                    from: token0Id,
+                    to: token1Id,
+                    width: 1, // Default width
+                    protocol: pairData.protocol_system,
+                    id: pairAddress
+                };
+
+                // Set color based on protocol
+                if (poolEdge.protocol && protocolColorMap[poolEdge.protocol]) {
+                    poolEdge.color = protocolColorMap[poolEdge.protocol].color;
+                }
+
+                newPoolEdges.push(poolEdge);
+            }
+        });
+
+        // Now add the new nodes and edges to our data
+        if (newTokenNodes.length > 0) {
+            console.log(`Adding ${newTokenNodes.length} new token nodes`);
+            this.tokenNodes = [...this.tokenNodes, ...newTokenNodes];
+        }
+
+        if (newPoolEdges.length > 0) {
+            console.log(`Adding ${newPoolEdges.length} new pool edges`);
+            this.poolEdges = [...this.poolEdges, ...newPoolEdges];
+        }
+
+        // Update the node selection UI if there are new nodes
+        if (newTokenNodes.length > 0) {
+            this.createNodeSelectionUI();
+        }
+
+        // Update the visualization
+        this.updateNetworkStructure();
+
+        return {
+            addedNodes: newTokenNodes.length,
+            addedEdges: newPoolEdges.length
+        };
     }
 }
