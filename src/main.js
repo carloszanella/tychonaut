@@ -77,8 +77,10 @@ function setupControls() {
                         edgeIds.push(edge.id);
                     });
                 }
-
+            
                 graphManager.highlight(nodeIds, edgeIds);
+
+                graphManager.setHighlightsPaused(true);
 
                 // Call the simulation API
                 //     struct SimulationResponse {
@@ -151,7 +153,8 @@ function setupControls() {
         console.log("Swap button found, adding event listener");
         swapButton.addEventListener('click', () => {
             console.log('Execute Swap button clicked');
-            graphManager.resetHighlights();
+            graphManager.setHighlightsPaused(false);
+            // graphManager.resetHighlights();
             // In the future, this would execute the swap
         });
     } else {

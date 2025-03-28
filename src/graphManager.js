@@ -19,6 +19,8 @@ export class GraphManager {
         this.tokenNodes = [];
         this.poolEdges = [];
 
+        this.highlightsPaused = false;
+
         // Initialize just the network container
         this.initializeNetwork();
     }
@@ -70,6 +72,23 @@ export class GraphManager {
 
         // Create the network
         this.network = new Network(container, data, options);
+    }
+
+    // Add these new methods to control pause state
+    /**
+     * Toggle the pause state of highlight updates
+     * @param {boolean} pauseState - True to pause, false to unpause
+     * @returns {boolean} - The new pause state
+     */
+    setHighlightsPaused(pauseState) {
+        this.highlightsPaused = pauseState;
+        
+        // If unpausing, reset any existing highlights
+        if (!pauseState) {
+            this.resetHighlights();
+        }
+        
+        return this.highlightsPaused;
     }
 
     // Create checkboxes for node selection
@@ -543,22 +562,29 @@ export class GraphManager {
             // For the first message, do a full update
             this.updateNetworkStructure();
             firstMessage = false;
-        } else if (result.addedNodes > 0 || result.addedEdges > 0) {
-            // For subsequent messages, update incrementally
+        } else{
+            console.log("Updating network with new data: " + Object.keys(data.tvl_updates).length);
+            // For subsequent messages, pulse for updated edges
+            const edgeIds = Object.keys(data.tvl_updates);
+            graphManager.highlight([], edgeIds);
 
-            // Add just the new nodes to the visualization if they're selected
-            if (result.addedNodes > 0 && result.newTokenNodes) {
-                const nodesToAdd = result.newTokenNodes.filter(node =>
-                    this.selectedNodes.has(node.id)
-                );
-                if (nodesToAdd.length > 0) {
-                    this.nodes.add(nodesToAdd);
+            if (result.addedNodes > 0 || result.addedEdges > 0) {
+                // For subsequent messages, update incrementally
+
+                // Add just the new nodes to the visualization if they're selected
+                if (result.addedNodes > 0 && result.newTokenNodes) {
+                    const nodesToAdd = result.newTokenNodes.filter(node =>
+                        this.selectedNodes.has(node.id)
+                    );
+                    if (nodesToAdd.length > 0) {
+                        this.nodes.add(nodesToAdd);
+                    }
                 }
-            }
 
-            // Add just the new edges to the visualization using addPoolEdges
-            if (result.addedEdges > 0 && result.newPoolEdges) {
-                this.addPoolEdges(result.newPoolEdges);
+                // Add just the new edges to the visualization using addPoolEdges
+                if (result.addedEdges > 0 && result.newPoolEdges) {
+                    this.addPoolEdges(result.newPoolEdges);
+                }
             }
         }
 
@@ -673,80 +699,82 @@ export class GraphManager {
      * @param {Array} edgeIds - Array of edge IDs to highlight
      */
     highlight(nodeIds, edgeIds) {
-        // Reset any existing highlights first
-        this.resetHighlights();
+        if (!this.highlightsPaused) {
+            // Reset any existing highlights first
+            this.resetHighlights();
 
-        // Store the highlighted elements
-        this.highlightedNodes = new Set(nodeIds);
-        this.highlightedEdges = new Set(edgeIds);
+            // Store the highlighted elements
+            this.highlightedNodes = new Set(nodeIds);
+            this.highlightedEdges = new Set(edgeIds);
 
-        // Update nodes
-        if (nodeIds && nodeIds.length > 0) {
-            const nodesToUpdate = [];
+            // Update nodes
+            if (nodeIds && nodeIds.length > 0) {
+                const nodesToUpdate = [];
 
-            nodeIds.forEach(nodeId => {
-                nodesToUpdate.push({
-                    id: nodeId,
-                    borderWidth: 4,
-                    borderWidthSelected: 6,
-                    font: {
-                        size: 12,
-                    },
-                    color: {
-                        border: '#FF9800',  // Orange border
-                        highlight: {
-                            border: '#000000',
-                            color: '#F66733'
+                nodeIds.forEach(nodeId => {
+                    nodesToUpdate.push({
+                        id: nodeId,
+                        borderWidth: 4,
+                        borderWidthSelected: 6,
+                        font: {
+                            size: 12,
+                        },
+                        color: {
+                            border: '#FF9800',  // Orange border
+                            highlight: {
+                                border: '#000000',
+                                color: '#F66733'
+                            }
                         }
+                    });
+                });
+
+                // Apply updates to nodes
+                if (nodesToUpdate.length > 0) {
+                    this.nodes.update(nodesToUpdate);
+                }
+            }
+
+            // Update edges
+            if (edgeIds && edgeIds.length > 0) {
+                const edgesToUpdate = [];
+
+                edgeIds.forEach(edgeId => {
+                    // Find the original edge to preserve its properties
+                    const originalEdge = this.edges.get(edgeId);
+
+                    if (originalEdge) {
+                        // Store original protocol color
+                        let originalColor = originalEdge.color;
+
+                        // If the edge's protocol isn't selected, it would be gray
+                        // In that case, get the original color from the protocol map
+                        if (originalEdge.protocol &&
+                            !this.selectedProtocols.has(originalEdge.protocol) &&
+                            protocolColorMap[originalEdge.protocol]) {
+                            originalColor = protocolColorMap[originalEdge.protocol].color;
+                        }
+
+                        edgesToUpdate.push({
+                            id: edgeId,
+                            width: 10,  // Triple the width
+                            color: originalColor,           // Restore original color
+                            dashes: false                   // Remove any dashes
+                        });
                     }
                 });
-            });
 
-            // Apply updates to nodes
-            if (nodesToUpdate.length > 0) {
-                this.nodes.update(nodesToUpdate);
-            }
-        }
-
-        // Update edges
-        if (edgeIds && edgeIds.length > 0) {
-            const edgesToUpdate = [];
-
-            edgeIds.forEach(edgeId => {
-                // Find the original edge to preserve its properties
-                const originalEdge = this.edges.get(edgeId);
-
-                if (originalEdge) {
-                    // Store original protocol color
-                    let originalColor = originalEdge.color;
-
-                    // If the edge's protocol isn't selected, it would be gray
-                    // In that case, get the original color from the protocol map
-                    if (originalEdge.protocol &&
-                        !this.selectedProtocols.has(originalEdge.protocol) &&
-                        protocolColorMap[originalEdge.protocol]) {
-                        originalColor = protocolColorMap[originalEdge.protocol].color;
-                    }
-
-                    edgesToUpdate.push({
-                        id: edgeId,
-                        width: 10,  // Triple the width
-                        color: originalColor,           // Restore original color
-                        dashes: false                   // Remove any dashes
-                    });
+                // Apply updates to edges
+                if (edgesToUpdate.length > 0) {
+                    this.edges.update(edgesToUpdate);
                 }
-            });
-
-            // Apply updates to edges
-            if (edgesToUpdate.length > 0) {
-                this.edges.update(edgesToUpdate);
             }
-        }
 
-        return {
-            highlightedNodes: nodeIds ? nodeIds.length : 0,
-            highlightedEdges: edgeIds ? edgeIds.length : 0
-        };
+            return {
+                highlightedNodes: nodeIds ? nodeIds.length : 0,
+                highlightedEdges: edgeIds ? edgeIds.length : 0
+            };
+        }
     }
 
     /**
