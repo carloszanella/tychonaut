@@ -277,17 +277,30 @@ export class GraphManager {
             if (edge.protocol && protocolColorMap[edge.protocol]) {
                 edge.color = protocolColorMap[edge.protocol].color;
             }
+
+            this.styleEdgeByProtocol(edge);
         });
 
         // Add the new edges to the stored data
         this.poolEdges = [...this.poolEdges, ...newEdges];
 
-        // Refresh the network with updated data
-        this.updateNetwork();
+        // Add edges to the visualization if they connect selected nodes and match selected protocols
+        const edgesToAdd = newEdges.filter(edge =>
+            this.selectedNodes.has(edge.from) &&
+            this.selectedNodes.has(edge.to)
+        );
+
+        if (edgesToAdd.length > 0) {
+            console.log("Adding edges to visualization:", edgesToAdd);
+            this.edges.add(edgesToAdd);
+        }
     }
 
     // Update existing pool values
     updatePoolValues(updatedEdges) {
+        // Keep track of edges that need to be updated in the visualization
+        const visualUpdates = [];
+
         // Update values for existing edges
         updatedEdges.forEach(updatedEdge => {
             const index = this.poolEdges.findIndex(
@@ -308,17 +321,34 @@ export class GraphManager {
                     this.poolEdges[index].protocol = updatedEdge.protocol;
                     this.poolEdges[index].color = protocolColorMap[updatedEdge.protocol].color;
                 }
+
+                // Apply styling based on protocol selection
+                const styledEdge = this.styleEdgeByProtocol({...this.poolEdges[index]});
+
+                // Add to visual updates if the nodes are selected
+                if (this.selectedNodes.has(styledEdge.from) &&
+                    this.selectedNodes.has(styledEdge.to)) {
+                    visualUpdates.push(styledEdge);
+                }
             }
         });
 
-        // Refresh the network with updated data
-        this.updateNetwork();
+        // Update the visualization directly
+        if (visualUpdates.length > 0) {
+            console.log("Updating edges in visualization:", visualUpdates);
+            this.edges.update(visualUpdates);
+        }
     }
 
-    // Remove pool edges
+// Remove pool edges
     removePoolEdges(edgesToRemove) {
+        const edgeIds = [];
+
         // edgesToRemove is an array of objects with from, to, and protocol properties
         edgesToRemove.forEach(edgeToRemove => {
+            const edgeId = edgeToRemove.id;
+            edgeIds.push(edgeId);
+
             this.poolEdges = this.poolEdges.filter(
                 edge => !(edge.from === edgeToRemove.from &&
                     edge.to === edgeToRemove.to &&
@@ -326,8 +356,15 @@ export class GraphManager {
             );
         });
 
-        // Refresh the network with updated data
-        this.updateNetwork();
+        // Remove from the visualization directly
+        if (edgeIds.length > 0) {
+            console.log("Removing edges from visualization:", edgeIds);
+            try {
+                this.edges.remove(edgeIds);
+            } catch (e) {
+                console.warn("Error removing edges (they may not exist in the visualization):", e);
+            }
+        }
     }
 
     // Get current pool edges data
