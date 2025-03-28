@@ -23,6 +23,11 @@ body {
     min-height: 100vh;
     height: 100vh;
     overflow: hidden;
+    background-image: url('/assets/space\ 1.svg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
 }
 
 #app {
@@ -78,11 +83,19 @@ body {
     justify-self: center;
     padding: 12px 30px;
     align-self: start;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
 }
 
 .title-panel h1 {
     font-size: 1.8rem;
     margin: 0;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
 }
 
 .left-panel {

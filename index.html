@@ -6,6 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Tychonaut</title>
     <link href="/src/style.css" rel="stylesheet" type="text/css"/>
+    <style>
+        /* More specific and comprehensive transparent background rules */
+        .panel.title-panel {
+            background: transparent !important;
+            background-color: transparent !important;
+            box-shadow: none !important; /* Remove any shadow effects */
+        }
+        
+        /* Target the panel directly */
+        .overlay-elements .panel.title-panel {
+            background: none !important;
+            border: none !important; /* Remove any borders */
+        }
+        
+        /* Make sure the image itself doesn't have a background */
+        .title-panel img {
+            background: transparent !important;
+        }
+    </style>
 </head>
 <body>
 <div id="app">
@@ -17,8 +36,11 @@
     <!-- Overlay elements -->
     <div class="overlay-elements">
         <!-- Floating title panel -->
-        <div class="panel title-panel">
-            <h1>Tychonaut</h1>
+        <div class="panel title-panel" style="background: none; box-shadow: none; border: none;">
+            <object data="/assets/tychonaut.svg" type="image/svg+xml" width="600" height="50" 
+                    style="background: transparent;">
+                <img src="/assets/tychonaut.svg" alt="Tychonaut" width="600" height="50">
+            </object>
         </div>
 
         <!-- Left panel -->
