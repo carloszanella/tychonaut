@@ -1,7 +1,7 @@
 import {GraphManager} from './graphManager.js';
 import {tokenNodes, poolEdges} from './data.js';
 import {startUpdateLoop, stopUpdateLoop} from './loop.js';
-import {find_best_route} from "./solver.js";
+import {find_best_route, callSimulationAPI} from "./solver.js";
 
 // Global reference to graph manager
 let graphManager;
@@ -36,11 +36,12 @@ function setupControls() {
     const simulateButton = document.querySelector('.simulate-button');
     if (simulateButton) {
         console.log("Simulate button found, adding event listener");
-        simulateButton.addEventListener('click', () => {
+        simulateButton.addEventListener('click', async () => {
             console.log('Execute Simulate button clicked');
 
             const sellTokenSelect = document.getElementById('sell-token').value;
             const buyTokenSelect = document.getElementById('buy-token').value;
+            const sellAmount = document.getElementById('sell-amount').value;
 
             // First, reset any existing highlights
             graphManager.resetHighlights();
@@ -78,6 +79,21 @@ function setupControls() {
                 }
 
                 graphManager.highlight(nodeIds, edgeIds);
+
+                // Call the simulation API
+                //     struct SimulationResponse {
+                //         success: bool,
+                //             input_amount: String,
+                //             output_amount: String,
+                //             gas_estimate: BigUint,
+                //     }
+                const apiResult = await callSimulationAPI(
+                    sellTokenSelect,
+                    edgeIds,
+                    sellAmount
+                );
+
+                console.log("Simulation API result:", apiResult);
             } else {
                 console.error("Failed to find route:", result.reason);
             }

@@ -147,3 +147,31 @@ export function find_best_route(nodes, edges, startNodeId, endNodeId) {
 
     return result;
 }
+
+// Function to call the simulation API
+export async function callSimulationAPI(sellToken, pools, amount) {
+    try {
+        const response = await fetch('http://0.0.0.0:3000/api/simulate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                sell_token: sellToken,
+                pools: pools,
+                amount: amount
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`API call failed with status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Simulation API response:", data);
+        return data;
+    } catch (error) {
+        console.error("Error calling simulation API:", error);
+        return null;
+    }
+}
