@@ -8,17 +8,17 @@ export const protocols = [
 
 export const protocolColorMap = {
     "uniswap_v2": {
-        color: "#322a61",
+        color: "#7968df",
         // highlight?: string,
         // hover?: string,
         // inherit?: boolean | string,
         // opacity?: number,
     },
     "uniswap_v3": {
-        color: "#587311",
+        color: "#96b642",
     },
     "balancer_v2": {
-        color: "#b66b39",
+        color: "#f3985c",
     }
 }
 
